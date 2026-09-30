@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhonePad Layout Studio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">P</span><span>PhonePad Studio</span></div>
+    <div class="top-actions">
+      <button id="previewToggle" class="button secondary" type="button">Preview</button>
+      <button id="saveLayout" class="button primary" type="button">Save layout</button>
+    </div>
+  </header>
+  <main class="workspace">
+    <aside class="rail left-rail" aria-label="Tools and templates">
+      <section class="panel-section">
+        <div class="section-title">Components</div>
+        <button id="addButton" class="component-tile" type="button"><span class="tile-icon">＋</span><span>Button</span></button>
+      </section>
+      <section class="panel-section templates">
+        <div class="section-title">Templates</div>
+        <button class="template-card" data-template="gamepad" type="button"><span class="mini-template gamepad-mini"></span><span>Gamepad</span></button>
+        <button class="template-card" data-template="touch" type="button"><span class="mini-template touch-mini"></span><span>Touch controls</span></button>
+        <button class="template-card" data-template="blank" type="button"><span class="mini-template blank-mini"></span><span>Blank canvas</span></button>
+      </section>
+    </aside>
+
+    <section class="stage-area" aria-label="Absolute layout canvas">
+      <div class="stage-toolbar"><span id="selectionSummary">Nothing selected</span><span class="hint">Drag to move · drag a handle to resize · Alt disables snapping</span></div>
+      <div id="canvasViewport" class="canvas-viewport">
+        <div id="canvas" class="canvas" tabindex="0" aria-label="Layout canvas">
+          <div id="guides" class="guides" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="rail inspector" aria-label="Inspector">
+      <section class="panel-section">
+        <div class="section-title">Inspector</div>
+        <div id="emptyInspector" class="empty-state">Select a button to edit its properties.</div>
+        <div id="buttonInspector" hidden>
+          <label class="field-label" for="buttonLabel">Label</label>
+          <input id="buttonLabel" class="text-input" type="text" maxlength="40">
+          <div class="field-grid">
+            <label>X<input id="posX" type="number" step="1"></label>
+            <label>Y<input id="posY" type="number" step="1"></label>
+            <label>Width<input id="sizeW" type="number" min="24" step="1"></label>
+            <label>Height<input id="sizeH" type="number" min="24" step="1"></label>
+          </div>
+          <label class="toggle-row"><input id="reverseButton" type="checkbox"><span>Reverse content</span></label>
+          <label class="toggle-row"><input id="disabledButton" type="checkbox"><span>Disabled in preview</span></label>
+          <button id="deleteButton" class="button danger wide" type="button">Delete button</button>
+        </div>
+      </section>
+      <section class="panel-section layouts">
+        <div class="section-title">Layouts</div>
+        <div class="layout-controls"><input id="layoutName" class="text-input" placeholder="Layout name" maxlength="48"><button id="saveNamed" class="button primary" type="button">Save</button></div>
+        <select id="layoutSelect" class="select-input" aria-label="Saved layouts"></select>
+        <button id="deleteLayout" class="button danger wide" type="button">Delete selected layout</button>
+      </section>
+    </aside>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

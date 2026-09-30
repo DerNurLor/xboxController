@@ -1,0 +1,8 @@
+.tools/
+build/
+local.properties
+.gradle/
+*.jks
+__pycache__/
+.venv/
+*.token
