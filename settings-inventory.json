@@ -1,0 +1,1259 @@
+[
+  {
+    "scope": "layout",
+    "key": "name",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "Default",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "base",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "Default",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "labels",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "XBOX",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "leftMode",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "FLOATING",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "rightMode",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "FIXED",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "clickGesture",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "DOUBLE_TAP",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "game",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "General",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "holdLayout",
+    "category": "Advanced",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "aimLayout",
+    "category": "Advanced",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "quickStyle",
+    "category": "Advanced",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "LIST",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "switchButtons",
+    "category": "Advanced",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 0,
+    "range": [
+      0,
+      65535
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "triggerMode",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "EDGE",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "curve",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "LINEAR",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gyroEnabled",
+    "category": "Gyroscope",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gyroAimOnly",
+    "category": "Gyroscope",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": true,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gyroInvertX",
+    "category": "Gyroscope",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gyroInvertY",
+    "category": "Gyroscope",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gyroSensitivity",
+    "category": "Gyroscope",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".6",
+    "range": [
+      0.05,
+      5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gyroSmoothing",
+    "category": "Gyroscope",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".35",
+    "range": [
+      0,
+      0.95
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gyroDeadzone",
+    "category": "Gyroscope",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".015",
+    "range": [
+      0,
+      0.2
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "edgeSwitch",
+    "category": "Advanced",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "transferSticks",
+    "category": "Advanced",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "integrated",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "preserveY",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "hideTriggers",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": true,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "ltSteering",
+    "category": "Stick behavior & clicks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "rtSteering",
+    "category": "Stick behavior & clicks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "grid",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": true,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "snap",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "deadzone",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".08",
+    "range": [
+      0,
+      0.4
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "sensitivity",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.25,
+      3
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "triggerDeadzone",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".12",
+    "range": [
+      0,
+      0.5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "triggerSensitivity",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.25,
+      3
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "travel",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".16",
+    "range": [
+      0.04,
+      0.5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gridSize",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".025",
+    "range": [
+      0.01,
+      0.1
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "haptics",
+    "category": "Haptics",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0,
+      3
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gameplayLock",
+    "category": "Game mode",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "sameThumbFire",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "rtDoubleTapNitro",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "boolean",
+    "path": "EditorWorkspace RT option \u2192 PadView.mutate \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "fireTapMs",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 180,
+    "range": [
+      80,
+      250
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "fireGapMs",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 280,
+    "range": [
+      120,
+      400
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "fireSlop",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".025",
+    "range": [
+      0.005,
+      0.05
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "unifiedOrientation",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "VERTICAL",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "unifiedCurve",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "LINEAR",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "aimMode",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "HOLD",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "unifiedFloating",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": true,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "unifiedInvert",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "cameraFire",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "unifiedDeadzone",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".08",
+    "range": [
+      0,
+      0.5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "unifiedTravel",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": ".18",
+    "range": [
+      0.04,
+      0.5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "unifiedSensitivity",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.25,
+      3
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "cameraX",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.1,
+      5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "cameraY",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.1,
+      5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "cameraCurve",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.25,
+      3
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "cameraSmoothing",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 0,
+    "range": [
+      0,
+      0.95
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "aimSensitivity",
+    "category": "Camera & aiming",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.1,
+      1
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "id",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "template-specific / immutable identity",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "kind",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "template-specific / immutable identity",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "bit",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "template-specific / immutable identity",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "label",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "mode",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "gesture",
+    "category": "Controls",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "HOLD",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "action",
+    "category": "Controls",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "BUTTONS",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "target",
+    "category": "Controls",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "modifiedButtons",
+    "category": "Controls",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": -1,
+    "range": [
+      -1,
+      65535
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "hitWidth",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.5,
+      3
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "hitHeight",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.5,
+      3
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "x",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "template-specific / immutable identity",
+    "range": [
+      0,
+      1
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "y",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "template-specific / immutable identity",
+    "range": [
+      0,
+      1
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "w",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "template-specific / immutable identity",
+    "range": [
+      0.025,
+      0.5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "h",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "template-specific / immutable identity",
+    "range": [
+      0.04,
+      0.7
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "hitbox",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1.15,
+    "range": [
+      1,
+      2
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "opacity",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.1,
+      1
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "deadzone",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": -1,
+    "range": [
+      -1,
+      0.4
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "sensitivity",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": -1,
+    "range": [
+      -1,
+      5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "response",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 1,
+    "range": [
+      0.25,
+      3
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "haptic",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": true,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "visible",
+    "category": "Appearance",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": true,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "reverse",
+    "category": "Triggers & racing",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "invertX",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "invertY",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "buttons",
+    "category": "Controls",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": -1,
+    "range": [
+      -1,
+      65535
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "outputLT",
+    "category": "Controls",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 0,
+    "range": [
+      0,
+      1
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "outputRT",
+    "category": "Controls",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": 0,
+    "range": [
+      0,
+      1
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "global",
+    "key": "enabled",
+    "category": "Haptics",
+    "storage": "haptics.v1 SharedPreferences",
+    "source": "PhoneHaptics.java",
+    "default": true,
+    "range": "0..1 for mixer levels; boolean for source gates",
+    "path": "ControllerSettings \u2192 PhoneHaptics.save"
+  },
+  {
+    "scope": "global",
+    "key": "host",
+    "category": "Haptics",
+    "storage": "haptics.v1 SharedPreferences",
+    "source": "PhoneHaptics.java",
+    "default": true,
+    "range": "0..1 for mixer levels; boolean for source gates",
+    "path": "ControllerSettings \u2192 PhoneHaptics.save"
+  },
+  {
+    "scope": "global",
+    "key": "local",
+    "category": "Haptics",
+    "storage": "haptics.v1 SharedPreferences",
+    "source": "PhoneHaptics.java",
+    "default": true,
+    "range": "0..1 for mixer levels; boolean for source gates",
+    "path": "ControllerSettings \u2192 PhoneHaptics.save"
+  },
+  {
+    "scope": "global",
+    "key": "quiet",
+    "category": "Haptics",
+    "storage": "haptics.v1 SharedPreferences",
+    "source": "PhoneHaptics.java",
+    "default": false,
+    "range": "0..1 for mixer levels; boolean for source gates",
+    "path": "ControllerSettings \u2192 PhoneHaptics.save"
+  },
+  {
+    "scope": "global",
+    "key": "texture",
+    "category": "Haptics",
+    "storage": "haptics.v1 SharedPreferences",
+    "source": "PhoneHaptics.java",
+    "default": false,
+    "range": "0..1 for mixer levels; boolean for source gates",
+    "path": "ControllerSettings \u2192 PhoneHaptics.save"
+  },
+  {
+    "scope": "global",
+    "key": "heavy",
+    "category": "Haptics",
+    "storage": "haptics.v1 SharedPreferences",
+    "source": "PhoneHaptics.java",
+    "default": 1,
+    "range": "0..1 for mixer levels; boolean for source gates",
+    "path": "ControllerSettings \u2192 PhoneHaptics.save"
+  },
+  {
+    "scope": "global",
+    "key": "light",
+    "category": "Haptics",
+    "storage": "haptics.v1 SharedPreferences",
+    "source": "PhoneHaptics.java",
+    "default": 1,
+    "range": "0..1 for mixer levels; boolean for source gates",
+    "path": "ControllerSettings \u2192 PhoneHaptics.save"
+  },
+  {
+    "scope": "global",
+    "key": "strength",
+    "category": "Haptics",
+    "storage": "haptics.v1 SharedPreferences",
+    "source": "PhoneHaptics.java",
+    "default": 0.7,
+    "range": "0..1 for mixer levels; boolean for source gates",
+    "path": "ControllerSettings \u2192 PhoneHaptics.save"
+  },
+  {
+    "scope": "global",
+    "key": "host",
+    "category": "Connection",
+    "storage": "connection SharedPreferences",
+    "source": "MainActivity.java",
+    "default": "",
+    "range": "Host text; UDP port 1..65535",
+    "path": "ControllerSettings \u2192 MainActivity.connectWifi"
+  },
+  {
+    "scope": "global",
+    "key": "port",
+    "category": "Connection",
+    "storage": "connection SharedPreferences",
+    "source": "MainActivity.java",
+    "default": "39570",
+    "range": "Host text; UDP port 1..65535",
+    "path": "ControllerSettings \u2192 MainActivity.connectWifi"
+  },
+  {
+    "scope": "layout",
+    "key": "gyroSensitivityX",
+    "category": "Gyroscope",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "0 (inherit gyroSensitivity)",
+    "range": [
+      0,
+      5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "layout",
+    "key": "gyroSensitivityY",
+    "category": "Gyroscope",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "0 (inherit gyroSensitivity)",
+    "range": [
+      0,
+      5
+    ],
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "fullscreen",
+    "category": "Sticks",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "enumeration, boolean, bounded text or immutable identity; see ProfileStore.decode",
+    "path": "ControllerSettings \u2192 validated automatic save \u2192 PadView.saveLayout \u2192 ProfileStore.encode/decode"
+  },
+  {
+    "scope": "control",
+    "key": "binding",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "program",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "condition",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "visibleWhen",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "source",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "macroMode",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "PRESS",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "eventDriven",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "mapUp",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated directional outputs",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "mapDown",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated directional outputs",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "mapLeft",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated directional outputs",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "mapRight",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated directional outputs",
+    "path": "Editor \u2192 Mapper / Macros \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "macroTriggers",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Layout control IDs, comma-separated",
+    "path": "Edit layout \u2192 Macros \u2192 Connect to other buttons"
+  },
+  {
+    "scope": "control",
+    "key": "sourceUp",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Edit layout \u2192 Mapper \u2192 Direction \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "sourceDown",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Edit layout \u2192 Mapper \u2192 Direction \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "sourceLeft",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Edit layout \u2192 Mapper \u2192 Direction \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "sourceRight",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": "",
+    "range": "Validated mapping, condition or bounded macro",
+    "path": "Edit layout \u2192 Mapper \u2192 Direction \u2192 ProfileStore"
+  },
+  {
+    "scope": "control",
+    "key": "independentMappings",
+    "category": "Controller",
+    "storage": "profiles.v4 JSON",
+    "source": "ControllerConfig.java",
+    "default": false,
+    "range": "Boolean; migration marker for independent mapping records",
+    "path": "Edit layout \u2192 Mapper \u2192 ProfileStore"
+  }
+]

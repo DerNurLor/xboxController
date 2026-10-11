@@ -27,6 +27,12 @@ def main():
         p=tools/name
         if not os.access(p,os.X_OK):p.chmod(p.stat().st_mode|0o111)
     BUILD.mkdir(exist_ok=True)
+    # These APKs are ZIP containers. Reusing base.apk in append mode below must
+    # start from a fresh resource-only APK; otherwise a previous classes.dex is
+    # retained and every incremental build produces a duplicate dex entry.
+    for name in ('base.apk','aligned.apk','PhonePad-debug.apk'):
+        (BUILD/name).unlink(missing_ok=True)
+    libraries=sorted((ROOT/'app/libs').glob('*.jar'))
     for name in ('classes','generated','dex'):
         d=BUILD/name
         if d.exists():shutil.rmtree(d)
@@ -36,9 +42,10 @@ def main():
         '-I',android,'--java',BUILD/'generated','--min-sdk-version','28','--target-sdk-version','35',
         '--version-code','1','--version-name','0.1.0','--debug-mode',BUILD/'resources.zip')
     sources=sorted((ROOT/'app/src/main/java').rglob('*.java'))+sorted((BUILD/'generated').rglob('*.java'))
-    run('javac','--release','17','-Xlint:unchecked','-cp',android,'-d',BUILD/'classes',*sources)
+    classpath=os.pathsep.join([str(android),*(str(library) for library in libraries)])
+    run('javac','--release','17','-Xlint:unchecked','-cp',classpath,'-d',BUILD/'classes',*sources)
     run('jar','--create','--file',BUILD/'classes.jar','-C',BUILD/'classes','.')
-    run(tools/'d8','--lib',android,'--min-api','28','--output',BUILD/'dex',BUILD/'classes.jar')
+    run(tools/'d8','--lib',android,'--min-api','28','--output',BUILD/'dex',BUILD/'classes.jar',*libraries)
     with zipfile.ZipFile(BUILD/'base.apk','a',compression=zipfile.ZIP_DEFLATED) as z:
         for dex in (BUILD/'dex').glob('*.dex'):z.write(dex,dex.name)
     run(tools/'zipalign','-f','4',BUILD/'base.apk',BUILD/'aligned.apk')

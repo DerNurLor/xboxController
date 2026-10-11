@@ -1,5 +1,7 @@
 """Host gamepad creation; imports remain optional for protocol tests."""
 import time
+import math
+import uuid
 from protocol import decode, NEUTRAL
 
 BUTTON_BITS = (0, 1, 3, 4, 6, 7, 10, 11, 12, 13, 14, 15)
@@ -18,6 +20,9 @@ class DryRun:
     def poll(self):
         pass
 
+    def stop_feedback(self):
+        pass
+
     def close(self):
         self.apply(NEUTRAL)
 
@@ -26,7 +31,9 @@ class LinuxPad:
     def __init__(self):
         from evdev import UInput, AbsInfo, ecodes as e
         self.e = e
-        self.buttons = (e.BTN_SOUTH,e.BTN_EAST,e.BTN_WEST,e.BTN_NORTH,e.BTN_TL,e.BTN_TR,
+        # Xbox/xpad uses legacy BTN_X/BTN_Y ordering; geographic WEST/NORTH
+        # reverses X and Y in Proton's direct XInput path for this identity.
+        self.buttons = (e.BTN_A,e.BTN_B,e.BTN_X,e.BTN_Y,e.BTN_TL,e.BTN_TR,
                         e.BTN_SELECT,e.BTN_START,e.BTN_MODE,e.BTN_THUMBL,e.BTN_THUMBR,e.KEY_RECORD)
         self.axes = (e.ABS_X,e.ABS_Y,e.ABS_RX,e.ABS_RY,e.ABS_Z,e.ABS_RZ,e.ABS_HAT0X,e.ABS_HAT0Y)
         axes = [(a, AbsInfo(0, -32767, 32767, 0, 0, 0)) for a in self.axes[:4]]
@@ -34,7 +41,7 @@ class LinuxPad:
         axes += [(a, AbsInfo(0, -1, 1, 0, 0, 0)) for a in self.axes[6:]]
         self.ui = UInput({e.EV_KEY:list(self.buttons), e.EV_ABS:axes, e.EV_FF:[e.FF_RUMBLE,e.FF_GAIN]},
                          name='PhonePad Virtual Xbox Layout', vendor=0x045e, product=0x028e,
-                         version=0x0114, bustype=0x03, max_effects=16)
+                         version=0x0114, bustype=0x03, max_effects=16, phys='phonepad/'+uuid.uuid4().hex+'/controller')
         self.effects, self.active, self.gain = {}, {}, 65535
         self.apply(NEUTRAL)
 
@@ -59,6 +66,7 @@ class LinuxPad:
                                 effect.u.ff_rumble_effect.weak_magnitude, effect.ff_replay.length/1000,
                                 effect.ff_replay.delay/1000)
                             upload.retval = 0
+                            if getattr(self,'trace_feedback',False):print('FF upload',effect.id,self.effects[effect.id],flush=True)
                         else:
                             upload.retval = -22
                     finally:
@@ -68,14 +76,15 @@ class LinuxPad:
                     self.effects.pop(erase.effect_id, None)
                     self.active.pop(erase.effect_id, None)
                     erase.retval = 0
+                    if getattr(self,'trace_feedback',False):print('FF erase',erase.effect_id,flush=True)
                     self.ui.end_erase(erase)
                 elif event.type == e.EV_FF:
+                    if getattr(self,'trace_feedback',False):print('FF play/stop/gain',event.code,event.value,flush=True)
                     if event.code == e.FF_GAIN:
                         self.gain = max(0, min(65535,event.value))
-                    elif event.value and event.code in self.effects:
-                        strong, weak, duration, delay = self.effects[event.code]
-                        start = time.monotonic()+delay
-                        self.active[event.code] = (strong,weak,start,start+min(duration*event.value,60))
+                    elif event.value > 0 and event.code in self.effects:
+                        # Resolve the uploaded effect on every poll: games update playing IDs.
+                        self.active[event.code] = (time.monotonic(), event.value)
                     else:
                         self.active.pop(event.code, None)
         except BlockingIOError:
@@ -97,15 +106,30 @@ class LinuxPad:
         now = time.monotonic()
         low=high=0
         end=now
-        for key, (a,b,start,stop) in list(self.active.items()):
-            if stop <= now:
+        for key, (started, repeats) in list(self.active.items()):
+            a,b,duration,delay = self.effects[key]
+            elapsed=now-started
+            period=duration+delay
+            # Linux replay length 0 is indefinite until explicit stop/erase.
+            if duration == 0:
+                remaining=.25 if elapsed>=delay else 0
+            elif elapsed >= period*repeats:
                 del self.active[key]
-            elif start <= now:
-                low=max(low,a);high=max(high,b);end=max(end,stop)
+                continue
+            else:
+                position=elapsed % period
+                remaining=period-position if position>=delay else 0
+            if remaining>0:
+                low=max(low,a);high=max(high,b);end=max(end,now+remaining)
         scale = 255*self.gain/(65535*65535)
-        return bytes((round(low*scale),round(high*scale),min(250,max(0,round((end-now)*100)))))
+        # Short renewable feedback lease bounds phone vibration on lost transport.
+        return bytes((round(low*scale),round(high*scale),min(25,max(0,math.ceil((end-now)*100)))))
+
+    def stop_feedback(self):
+        self.active.clear()
 
     def close(self):
+        self.stop_feedback()
         try:
             self.apply(NEUTRAL)
         finally:
@@ -152,5 +176,9 @@ class WindowsPad:
         # XInput reports amplitude changes, not duration; short leases are renewed by the transport.
         return self.feedback
 
+    def stop_feedback(self):
+        self.feedback=bytes(3)
+
     def close(self):
+        self.stop_feedback()
         self.pad.reset();self.pad.update();self.pad.unregister_notification()

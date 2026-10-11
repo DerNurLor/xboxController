@@ -1,0 +1,10 @@
+# Let the active local desktop session consume PhonePad's virtual devices.
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="PhonePad Virtual Xbox Layout", TAG+="seat", TAG+="uaccess"
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="PhonePad Keyboard and Mouse", TAG+="seat", TAG+="uaccess"
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="PhonePad Keyboard", TAG+="seat", TAG+="uaccess"
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="PhonePad Mouse", TAG+="seat", TAG+="uaccess"
+# PhonePad's Bluetooth composite HID identity (vendor 038f, product 1200).
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{id/bustype}=="0005", ATTRS{id/vendor}=="038f", ATTRS{id/product}=="1200", TAG+="seat", TAG+="uaccess"
+# Companion reads the composite reports from hidraw to bridge both desktop
+# and gamepad actions. hidapi cannot open this node without active-session ACL.
+SUBSYSTEM=="hidraw", KERNEL=="hidraw*", KERNELS=="0005:038F:1200.*", ENV{ID_SEAT}="seat0", TAG+="seat0", TAG+="uaccess"

@@ -1,91 +1,88 @@
 #!/usr/bin/env python3
-"""Run on the receiving PC. See README for driver setup and Bluetooth bridge usage."""
+"""PhonePad terminal receiver; uses the same service as the Qt desktop app."""
 import argparse
+import json
 import os
 from pathlib import Path
-import secrets
 import socket
 import sys
+import threading
 import time
-from backends import DryRun, LinuxPad, WindowsPad
-from protocol import Protocol, NEUTRAL, decode
-
-
-def bluetooth_bridge(path, backend):
-    import hid
-    device=hid.device()
-    device.open_path(path.encode())
-    device.set_nonblocking(True)
-    last=time.monotonic()
-    neutral=True
-    try:
-        while True:
-            now=time.monotonic()
-            data=device.read(64)
-            if data and len(data)==14 and data[0]==1:
-                body=bytes(data[1:])
-                try:decode(body)
-                except ValueError:continue
-                backend.apply(body);last=now;neutral=body==NEUTRAL
-            if now-last>.5 and not neutral:
-                backend.apply(NEUTRAL);neutral=True
-            backend.poll()
-            if now-last<.5:
-                device.write(bytes([2])+backend.rumble())
-            time.sleep(.016)
-    finally:
-        try:device.write(bytes([2,0,0,0]))
-        finally:device.close()
+from bluetooth_bridge import BluetoothPump  # compatibility import
+from configuration import DEFAULTS
+from hid_devices import enumerate_phonepad_hid
+from service import CompanionService
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bind',default='0.0.0.0')
     parser.add_argument('--port',type=int,default=39570)
-    parser.add_argument('--backend',choices=('linux','windows','dry-run'),default='windows' if sys.platform=='win32' else 'linux')
-    parser.add_argument('--key-file',type=Path,help='Load/create a persistent pairing key; otherwise generate one each run')
-    parser.add_argument('--list-hid',action='store_true',help='List gamepad HID paths for an optional Bluetooth-to-XInput bridge')
-    parser.add_argument('--bluetooth-path',help='Exact PhonePad HID path from --list-hid; do not select another device')
+    parser.add_argument('--backend',choices=('linux','windows','dry-run'),default=DEFAULTS['backend'])
+    parser.add_argument('--key-file',type=Path,default=Path.home()/'.config/phonepad/pairing.key')
+    parser.add_argument('--identity-file',type=Path,default=Path.home()/'.config/phonepad/identity.pem')
+    parser.add_argument('--name',default=socket.gethostname())
+    parser.add_argument('--no-wifi',action='store_true')
+    parser.add_argument('--bluetooth',action='store_true',help='Observe native Bluetooth HID without reinjecting input')
+    parser.add_argument('--bluetooth-path',help='Optional exclusive HID bridge; requires native input capture permissions')
+    parser.add_argument('--no-discovery',action='store_true')
+    parser.add_argument('--show-key',action='store_true')
+    parser.add_argument('--list-hid',action='store_true')
+    parser.add_argument('--trace-feedback',action='store_true')
+    parser.add_argument('--qr-payload-file',type=Path)
     args=parser.parse_args()
     if args.list_hid:
-        import hid
-        for d in hid.enumerate():
-            if d.get('usage_page')==1 and d.get('usage') in (4,5):
-                print(d.get('product_string'),repr(d['path'].decode()))
-        return
-    key=secrets.token_bytes(16)
-    if args.key_file:
-        try:
-            with args.key_file.open('x') as f:
-                if os.name=='posix':os.fchmod(f.fileno(),0o600)
-                f.write(key.hex()+'\n')
-        except FileExistsError:
-            key=bytes.fromhex(args.key_file.read_text().strip())
-    if len(key)!=16:raise ValueError('Pairing key must be 16 bytes')
-    backend={'linux':LinuxPad,'windows':WindowsPad,'dry-run':DryRun}[args.backend]()
+        for device in enumerate_phonepad_hid():print(json.dumps(device))
+        return 0
+    if args.no_wifi and not (args.bluetooth or args.bluetooth_path):parser.error('Enable Wi-Fi or Bluetooth')
+    config=dict(wifi=not args.no_wifi,bluetooth=bool(args.bluetooth or args.bluetooth_path),
+        bind=args.bind,port=args.port,backend=args.backend,name=args.name,
+        key_file=str(args.key_file),identity_file=str(args.identity_file),bluetooth_path=args.bluetooth_path,
+        no_discovery=args.no_discovery,trace_feedback=args.trace_feedback)
+    service=CompanionService(config,args.key_file.parent)
+    service.command('start')
+    def commands():
+        for line in sys.stdin:
+            command=line.strip().lower()
+            if command in ('y','yes','n','no'):service.command('approve',command in ('y','yes'))
+            elif command in ('trace on','trace off'):service.command('trace',command.endswith('on'))
+            elif command in ('pair','stop','start','scan','clear'):service.command(command)
+    threading.Thread(target=commands,daemon=True,name='PhonePad terminal commands').start()
+    previous={};last_history=0;shown_key=False
+    print('Commands: pair, y/n, trace on/off, stop, start, scan. Ctrl+C exits.',flush=True)
     try:
-        if args.bluetooth_path:
-            bluetooth_bridge(args.bluetooth_path,backend)
-            return
-        protocol=Protocol(key,backend.apply,backend.rumble)
-        with socket.socket(socket.AF_INET,socket.SOCK_DGRAM) as sock:
-            sock.bind((args.bind,args.port));sock.settimeout(.02)
-            print(f'PhonePad listening on UDP {args.bind}:{args.port}',flush=True)
-            print(f'Pairing key: {key.hex()}',flush=True)
-            print('Enter this PC’s LAN IPv4 address in the phone. Ctrl+C stops and releases controls.',flush=True)
-            while True:
-                backend.poll();protocol.expire(time.monotonic())
-                try:raw,address=sock.recvfrom(256)
-                except socket.timeout:continue
-                reply=protocol.receive(raw,address,time.monotonic())
-                if reply:sock.sendto(reply,address)
+        while True:
+            state=service.snapshot()
+            for transport,value in state['receivers'].items():
+                if previous.get(transport)!=value:
+                    print(f'{transport}: {value}',flush=True);previous[transport]=value
+                    if transport=='wifi' and value=='Running':print(f'PhonePad listening on UDP {args.bind}:{args.port}',flush=True)
+            for field in ('pairing_message','wifi_error','bluetooth_error'):
+                value=state[field]
+                if value and previous.get(field)!=value:print(value,flush=True)
+                previous[field]=value
+            if state['qr']!=previous.get('qr'):
+                previous['qr']=state['qr']
+                if args.qr_payload_file:
+                    if state['qr']:
+                        args.qr_payload_file.parent.mkdir(parents=True,exist_ok=True)
+                        fd=os.open(args.qr_payload_file,os.O_WRONLY|os.O_CREAT|os.O_TRUNC,0o600)
+                        with os.fdopen(fd,'w') as output:output.write(state['qr'])
+                        print('PhonePad QR ready',flush=True)
+                    else:args.qr_payload_file.unlink(missing_ok=True)
+            if args.show_key and not shown_key and service.protocol:
+                print('Pairing key: '+args.key_file.read_text().strip(),flush=True);shown_key=True
+            for event in state['history']:
+                if event['monotonic']>last_history:print('INPUT '+json.dumps(event),flush=True)
+            if state['history']:last_history=state['history'][-1]['monotonic']
+            if state['state']=='Failed':return 1
+            time.sleep(.05)
+    except KeyboardInterrupt:return 0
     finally:
-        backend.close()
-
+        service.close()
+        if args.qr_payload_file:args.qr_payload_file.unlink(missing_ok=True)
 
 if __name__=='__main__':
-    try:main()
-    except KeyboardInterrupt:pass
+    try:sys.exit(main())
     except (OSError,ValueError,ImportError,RuntimeError) as error:
-        print(f'PhonePad: {error}',file=sys.stderr)
-        sys.exit(1)
+        print('PhonePad: '+str(error),file=sys.stderr);sys.exit(1)

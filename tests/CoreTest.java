@@ -26,6 +26,8 @@ public final class CoreTest {
         check(wifi.nextReport(now)[0]==1&&wifi.nextReport(now)[0]==0,"preserve sub-frame taps");
         p.buttons=1;wifi.send(p.report());wifi.neutral();check(wifi.nextReport(now)[0]==0,"urgent neutral clears queued presses");
         wifi.send(p.report());check(wifi.nextReport(now+1000)[0]==0,"stalled UI neutralizes Wi-Fi output");
+        p.buttons=1;wifi.send(p.report());p.clear();p.lx=.6f;wifi.replace(p.report());
+        check(Arrays.equals(wifi.nextReport(now),p.report())&&Arrays.equals(wifi.nextReport(now),p.report()),"transition drops stale button queue and retains sticks");
         byte[] vector=WifiPad.packet(1,nonce,0,new byte[0],key);
         StringBuilder out=new StringBuilder();for(byte v:vector)out.append(String.format("%02x",v&255));
         System.out.println("HELLO_VECTOR="+out);System.out.println("Core tests passed");

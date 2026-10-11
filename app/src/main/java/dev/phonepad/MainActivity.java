@@ -8,34 +8,39 @@ import android.content.pm.PackageManager;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
+import org.json.JSONObject;
+import java.security.MessageDigest;
 import java.util.*;
 
 public final class MainActivity extends Activity {
+    private static final int QR_SCAN_REQUEST=4713;
+    private android.hardware.input.InputManager inputManager;
+    private final android.hardware.input.InputManager.InputDeviceListener deviceListener=new android.hardware.input.InputManager.InputDeviceListener(){public void onInputDeviceAdded(int id){}public void onInputDeviceChanged(int id){if(pad!=null)pad.release();}public void onInputDeviceRemoved(int id){if(pad!=null)pad.release();}};
     private PadView pad;
     private BluetoothPad bluetooth;
     private WifiPad wifi;
     private final Handler handler=new Handler(Looper.getMainLooper());
-    private boolean resumed, wifiMode;
-    private Vibrator vibrator;
-    private long vibrationEnd;
-    private int amplitude;
+    private boolean resumed, wifiMode, suggestedCompanion, autoReconnectAttempted;
+    public PhoneHaptics haptics;
     private String btStatus="Bluetooth · not connected",wifiStatus="Wi-Fi · not connected";
     private long lastSend,lastReconnect;
     private final Runnable tick=new Runnable(){public void run(){
         if(!resumed)return;
         long now=SystemClock.elapsedRealtime();
         boolean isConnected=wifiMode?wifi.connected():bluetooth.connected();
+        if(isConnected&&!wifiMode&&!suggestedCompanion){suggestedCompanion=true;Toast.makeText(MainActivity.this,"Bluetooth ready. For game vibration, open Connection → Find my computer.",Toast.LENGTH_LONG).show();}
         if(pad.connected&&!isConnected)pad.release();
-        pad.gyro.sync(resumed);pad.connected=isConnected;pad.refresh(SystemClock.uptimeMillis());
-        if(wifiMode)wifi.send(pad.state.report());
+        pad.gyro.sync(resumed);if(pad.connected!=isConnected)pad.invalidate();pad.connected=isConnected;pad.refresh(SystemClock.uptimeMillis());
+        if(wifiMode){wifi.sendSource(pad.input.sourceState.report());wifi.send(pad.state.report());wifi.sendDesktop(pad.input.automation.desktop());}
         if(!wifiMode && permitted()) {
-            if(now-lastSend>=16){bluetooth.send(pad.state.report());lastSend=now;}
+            if(now-lastSend>=16){bluetooth.sendSource(pad.input.sourceState.report());bluetooth.send(pad.state.report());bluetooth.sendDesktop(pad.input.automation.desktop());lastSend=now;}
             if(now-lastReconnect>2000){bluetooth.start();bluetooth.reconnect();lastReconnect=now;}
         }
-        pad.connected=wifiMode?wifi.connected():bluetooth.connected();pad.invalidate();handler.postDelayed(this,16);
+        boolean connected=wifiMode?wifi.connected():bluetooth.connected();if(pad.connected!=connected)pad.invalidate();pad.connected=connected;
+        handler.removeCallbacks(this);handler.postDelayed(this,pad.nextFrameDelay());
     }};
     @Override public void onCreate(Bundle saved) {
-        super.onCreate(saved);
+        AppAppearance.apply(this);super.onCreate(saved);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         WindowManager.LayoutParams windowParams=getWindow().getAttributes();
         windowParams.layoutInDisplayCutoutMode=WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
@@ -52,89 +57,120 @@ public final class MainActivity extends Activity {
                 controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
             }
         }
-        vibrator=getSystemService(Vibrator.class);
+        haptics=new PhoneHaptics(this);
         bluetooth=new BluetoothPad(this,new BluetoothPad.Listener(){
             public void disconnected(){if(pad!=null&&!wifiMode)pad.release();}
+            public void stopped(){if(!wifiMode)haptics.stopHost();}
             public void status(String s){btStatus=s;showStatus();android.util.Log.i("PhonePad",s);}
-            public void rumble(int low,int high,int ms){if(!wifiMode)vibrate(low,high,ms);}
+            public void rumble(int low,int high,int ms){if(!wifiMode)haptics.host(low,high,ms,"Bluetooth report 2");}
         });
         wifi=new WifiPad(new WifiPad.Listener(){
             public void status(String s){handler.post(()->{wifiStatus=s;showStatus();android.util.Log.i("PhonePad",s);});}
-            public void rumble(int low,int high,int ms){handler.post(()->{if(wifiMode)vibrate(low,high,ms);});}
+            public void stopped(long session){handler.post(()->{if(wifiMode&&wifi.sessionGeneration()==session){haptics.stopHost();if(pad!=null){pad.input.automation.clearGameState();pad.release();}}});}
+            public void gameState(String json,long session){long received=SystemClock.uptimeMillis();handler.post(()->{if(!wifiMode||wifi.sessionGeneration()!=session||pad==null||SystemClock.uptimeMillis()-received>250)return;try{JSONObject object=new JSONObject(json);Map<String,String> values=new HashMap<>();Iterator<String> names=object.keys();while(names.hasNext()){String name=names.next();values.put(name,object.getString(name));}if(pad.input.automation.gameState(values,SystemClock.uptimeMillis())){if(!pad.settingsOpen&&!pad.editing)pad.hardwareChanged();pad.invalidate();}}catch(Exception ignored){}});}
+            public void rumble(int low,int high,int ms){}
+            public void rumble(int low,int high,int ms,long session){long received=SystemClock.uptimeMillis();handler.post(()->{long age=SystemClock.uptimeMillis()-received;if(wifiMode&&wifi.sessionGeneration()==session&&age<250)haptics.host(low,high,(int)Math.max(0,ms-age),"Wi-Fi PP01 authenticated ACK");});}
         });
         pad=new PadView(this,new PadView.Actions(){
             public void connect(){connectionDialog();}
             public void settings(){settingsDialog();}
-            public void released(){if(wifiMode)wifi.neutral();else if(bluetooth!=null&&permitted())bluetooth.neutral();}
+            public void feedback(int strength){haptics.local(strength);}
+            public void emergency(){emergencyStop();}
+            public void pause(){gameMenu();}
+            public void released(){haptics.stop();if(wifiMode)wifi.neutral();else if(bluetooth!=null&&permitted())bluetooth.neutral();}
+            public void transitioned(){if(wifiMode)wifi.replace(pad.state.report());else changed();}
             public void changed(){
                 if(pad==null)return;
-                if(wifiMode)wifi.send(pad.state.report());
-                else if(bluetooth!=null && permitted())bluetooth.send(pad.state.report());
+                if(resumed){handler.removeCallbacks(tick);handler.postDelayed(tick,pad.nextFrameDelay());}
+                if(wifiMode){wifi.sendSource(pad.input.sourceState.report());wifi.send(pad.state.report());wifi.sendDesktop(pad.input.automation.desktop());}
+                else if(bluetooth!=null && permitted()){bluetooth.sendSource(pad.input.sourceState.report());bluetooth.send(pad.state.report());bluetooth.sendDesktop(pad.input.automation.desktop());}
             }
         });
-        pad.gyro=new GyroInput(this,pad);setContentView(pad);
+        pad.gyro=new GyroInput(this,pad);setContentView(pad);inputManager=(android.hardware.input.InputManager)getSystemService(INPUT_SERVICE);inputManager.registerInputDeviceListener(deviceListener,handler);
         if(!permitted())requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT,Manifest.permission.BLUETOOTH_ADVERTISE},1);
     }
     private boolean permitted(){return Build.VERSION.SDK_INT<31 || (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)==PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.BLUETOOTH_ADVERTISE)==PackageManager.PERMISSION_GRANTED);}
+    void scanCompanionQr(){startActivityForResult(new Intent(this,QrScannerActivity.class),QR_SCAN_REQUEST);}
+    @Override protected void onActivityResult(int request,int result,Intent data){
+        super.onActivityResult(request,result,data);
+        if(request==QR_SCAN_REQUEST&&result==RESULT_FIRST_USER&&data!=null&&data.getBooleanExtra(QrScannerActivity.EXTRA_MANUAL,false)){
+            new ControllerSettings(this,pad,this::connectionDialog).wifiPage();
+            return;
+        }
+        if(request!=QR_SCAN_REQUEST||result!=RESULT_OK||data==null)return;
+        try{
+            String payload=data.getStringExtra(QrScannerActivity.EXTRA_PAYLOAD);
+            if(payload==null||!payload.startsWith("PPQR1:"))throw new IllegalArgumentException("This is not a PhonePad connection code.");
+            JSONObject config=new JSONObject(payload.substring(6));
+            if(config.getInt("v")!=1)throw new IllegalArgumentException("This PhonePad code version is not supported.");
+            String host=config.getString("host"),id=config.getString("id"),name=config.optString("name","Computer"),publicKey=config.getString("public"),token=config.getString("token");
+            int port=config.getInt("port");byte[] encoded=CompanionLink.hex(publicKey,91);String expected=CompanionLink.hex(MessageDigest.getInstance("SHA-256").digest(encoded));
+            CompanionLink.hex(token,16);
+            if(host.trim().isEmpty()||port<1||port>65535||!id.equals(expected))throw new IllegalArgumentException("The connection code has invalid network details.");
+            CompanionLink.Computer computer=new CompanionLink.Computer(name,host,port,id,publicKey,false);
+            new ControllerSettings(this,pad,this::connectionDialog).pairScanned(computer,token);
+        }catch(Exception error){Toast.makeText(this,error.getMessage()==null?"Could not read the PhonePad connection code.":error.getMessage(),Toast.LENGTH_LONG).show();}
+    }
     @Override public void onRequestPermissionsResult(int r,String[] permissions,int[] results){super.onRequestPermissionsResult(r,permissions,results);if(permitted())bluetooth.start();else{btStatus="Nearby devices permission required · tap Connect to retry";showStatus();}}
     private void showStatus(){if(pad!=null){pad.status=wifiMode?wifiStatus:btStatus;pad.transport=wifiMode?"WI-FI · 60 HZ":"BLUETOOTH HID";pad.invalidate();}}
-    private void vibrate(int low,int high,int ms){
-        if(vibrator==null)return;
-        int a=Math.max(low,high);long now=SystemClock.elapsedRealtime();
-        if(a==0 || ms==0 || !resumed){vibrator.cancel();amplitude=0;vibrationEnd=0;return;}
-        if(a!=amplitude || vibrationEnd-now<80){
-            int duration=Math.min(ms,2500);vibrator.vibrate(VibrationEffect.createOneShot(duration,a));vibrationEnd=now+duration;amplitude=a;
+    @Override protected void onResume(){super.onResume();if(pad!=null)pad.loadSettings();resumed=true;haptics.active(true);if(!autoReconnectAttempted){autoReconnectAttempted=true;reconnectLastComputer();}if(permitted()&&!wifiMode)bluetooth.start();handler.removeCallbacks(tick);handler.post(tick);}
+    @Override protected void onPause(){pad.gyro.sync(false);pad.release();if(permitted())bluetooth.neutral();wifi.neutral();resumed=false;haptics.active(false);handler.removeCallbacks(tick);super.onPause();}
+    @Override protected void onStop(){if(permitted())bluetooth.suspend();super.onStop();}
+    @Override public void onWindowFocusChanged(boolean focus){super.onWindowFocusChanged(focus);if(focus&&Build.VERSION.SDK_INT>=30){WindowInsetsController c=getWindow().getInsetsController();if(c!=null)c.hide(WindowInsets.Type.systemBars());}if(haptics!=null)haptics.active(focus&&resumed&&pad!=null&&!pad.settingsOpen);if(!focus&&pad!=null){pad.gyro.sync(false);pad.release();wifi.neutral();if(permitted())bluetooth.neutral();}}
+    @Override protected void onDestroy(){if(inputManager!=null)inputManager.unregisterInputDeviceListener(deviceListener);wifi.close();if(permitted())bluetooth.close();handler.removeCallbacksAndMessages(null);super.onDestroy();}
+    private void emergencyStop(){pad.release();haptics.stop();wifi.close();wifiMode=false;if(permitted())bluetooth.disconnect();getSharedPreferences("connection",0).edit().remove("lastTransport").remove("lastWifiKey").remove("lastComputer").apply();showStatus();Toast.makeText(this,"All inputs released and transports disconnected",Toast.LENGTH_LONG).show();}
+    @Override public boolean dispatchKeyEvent(KeyEvent event){return HardwareInput.key(pad,event)||super.dispatchKeyEvent(event);}
+    @Override public boolean dispatchGenericMotionEvent(MotionEvent event){return HardwareInput.motion(pad,event)||super.dispatchGenericMotionEvent(event);}
+    @Override public boolean dispatchTouchEvent(MotionEvent event){if(event.isFromSource(InputDevice.SOURCE_MOUSE)&&HardwareInput.motion(pad,event))return true;return super.dispatchTouchEvent(event);}
+    @Override public void onBackPressed(){if(pad.editing&&!pad.settingsOpen){pad.finishEditing();new ControllerSettings(this,pad,this::connectionDialog).setup();return;}if(pad.settingsOpen){super.onBackPressed();return;}gameMenu();}
+    private void gameMenu(){
+        if(pad.gameplayLock.locked){pad.gameHandleLearned();pad.unlock();}
+        else new ControllerSettings(this,pad,this::connectionDialog).setup();
+    }
+    private void connectionDialog(){new ControllerSettings(this,pad,this::connectionDialog).connectionPage();}
+    void connectionAction(int i,ControllerSettings settings){
+        pad.release();
+        switch(i){
+            case 0:chooseBluetooth(settings,false);break;
+            case 1:if(ensureBluetooth()){switchBluetooth();Intent in=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);in.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,180);startActivity(in);}break;
+            case 2:startActivity(new Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS));break;
+            case 3:settings.wifiPage();break;
+            case 4:emergencyStop();break;
+            case 5:settings.connectionStatus(btStatus+"\n"+wifiStatus+"\nWi-Fi keyboard/mouse output: "+(wifi.desktopConnected()?"acknowledged":"not acknowledged · updated PhonePad Companion required")+"\nLast connected Bluetooth address: "+getSharedPreferences("connection",0).getString("lastComputer","None")+"\nBluetooth reports: "+bluetooth.reports+" / failures: "+bluetooth.failures+"\nWi-Fi desktop generated / serialized / attempted / acknowledged: "+wifi.desktopGenerated+" / "+wifi.desktopSerialized+" / "+wifi.desktopSendAttempts+" / "+wifi.desktopAcknowledged+"\nWi-Fi reports: "+wifi.reports+"\nInvalid feedback: "+wifi.invalidFeedback+" · stale feedback: "+wifi.staleFeedback);break;
         }
     }
-    @Override protected void onResume(){super.onResume();if(pad!=null)pad.loadSettings();resumed=true;if(permitted()&&!wifiMode)bluetooth.start();handler.removeCallbacks(tick);handler.post(tick);}
-    @Override protected void onPause(){pad.gyro.sync(false);pad.release();if(permitted())bluetooth.neutral();wifi.neutral();resumed=false;vibrate(0,0,0);handler.removeCallbacks(tick);super.onPause();}
-    @Override protected void onStop(){if(permitted())bluetooth.suspend();super.onStop();}
-    @Override public void onWindowFocusChanged(boolean focus){super.onWindowFocusChanged(focus);if(focus&&Build.VERSION.SDK_INT>=30){WindowInsetsController c=getWindow().getInsetsController();if(c!=null)c.hide(WindowInsets.Type.systemBars());}if(!focus&&pad!=null){pad.gyro.sync(false);pad.release();wifi.neutral();if(permitted())bluetooth.neutral();}}
-    @Override protected void onDestroy(){wifi.close();if(permitted())bluetooth.close();handler.removeCallbacksAndMessages(null);super.onDestroy();}
-    private void connectionDialog(){
-        pad.release();new AlertDialog.Builder(this).setTitle("Connect PhonePad")
-            .setItems(new String[]{"Bluetooth · choose paired host","Bluetooth · make phone discoverable","Open Bluetooth pairing settings","Wi-Fi · connect to companion","Disconnect","Connection diagnostics"},(d,i)->{
-                switch(i){
-                    case 0:chooseBluetooth();break;
-                    case 1:if(ensureBluetooth()){switchBluetooth();Intent in=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);in.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,180);startActivity(in);}break;
-                    case 2:startActivity(new Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS));break;
-                    case 3:wifiDialog();break;
-                    case 4:wifi.close();if(permitted())bluetooth.disconnect();wifiStatus="Wi-Fi · disconnected";showStatus();break;
-                    case 5:new AlertDialog.Builder(this).setTitle("Diagnostics").setMessage("Bluetooth: "+btStatus+"\nReports accepted by Android: "+bluetooth.reports+"\nSend failures: "+bluetooth.failures+"\n\nWi-Fi: "+wifiStatus+"\nReports sent: "+wifi.reports+"\n\nBluetooth is a standard HID gamepad. XInput-only Windows games need Steam Input or the companion. Bluetooth rumble needs a companion that understands PhonePad’s output report.\n\nKeep the app visible while playing. No console compatibility is claimed.").setPositiveButton("OK",null).show();break;
-                }
-            }).setNegativeButton("Close",null).show();
-    }
+    boolean bluetoothConnected(){return !wifiMode&&bluetooth.connected();}
     private boolean ensureBluetooth(){
         if(!permitted()){requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT,Manifest.permission.BLUETOOTH_ADVERTISE},1);return false;}
         if(!bluetooth.enabled()){try{startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));}catch(ActivityNotFoundException e){Toast.makeText(this,"Bluetooth is unavailable",Toast.LENGTH_LONG).show();}return false;}return true;
     }
-    private void switchBluetooth(){wifi.close();wifiMode=false;bluetooth.start();showStatus();}
-    private void chooseBluetooth(){
-        if(!ensureBluetooth())return;switchBluetooth();List<BluetoothDevice> devices=bluetooth.paired();
-        String[] names=new String[devices.size()];for(int i=0;i<names.length;i++)names[i]=(devices.get(i).getName()==null?"Unnamed device":devices.get(i).getName())+"\n"+devices.get(i).getAddress();
-        AlertDialog.Builder b=new AlertDialog.Builder(this).setTitle("Choose the computer / receiving device");
-        if(names.length==0)b.setMessage("Pair this phone with your host in Bluetooth settings, then return here.");
-        else b.setItems(names,(d,i)->bluetooth.connect(devices.get(i)));
-        b.setNegativeButton("Cancel",null).show();
+    private void switchBluetooth(){pad.input.automation.clearGameState();wifi.close();wifiMode=false;bluetooth.start();showStatus();}
+    void knownComputers(LinearLayout body,ControllerSettings settings){
+        if(!permitted())return;String previous=getSharedPreferences("connection",0).getString("lastComputer","");
+        for(BluetoothDevice device:bluetooth.paired()){
+            boolean known=device.getAddress().equals(previous),computer=device.getBluetoothClass()!=null&&device.getBluetoothClass().getMajorDeviceClass()==BluetoothClass.Device.Major.COMPUTER;if(!known&&!computer)continue;
+            String name=device.getName()==null?"Unnamed computer":device.getName();settings.computerRow(body,name,known?"Previously connected":"Paired",()->{if(ensureBluetooth()){switchBluetooth();bluetooth.connect(device);settings.connectionPage();}});
+        }
     }
-    private LinearLayout column(){LinearLayout l=new LinearLayout(this);l.setOrientation(LinearLayout.VERTICAL);int p=(int)(20*getResources().getDisplayMetrics().density);l.setPadding(p,8,p,8);return l;}
-    private EditText field(LinearLayout box,String hint,String value){EditText e=new EditText(this);e.setSingleLine(true);e.setHint(hint);e.setText(value);box.addView(e);return e;}
-    private void wifiDialog(){
-        SharedPreferences pref=getSharedPreferences("connection",0);LinearLayout box=column();
-        EditText host=field(box,"Computer IP address",pref.getString("host",""));
-        EditText port=field(box,"Port",pref.getString("port","39570"));port.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        EditText token=field(box,"32-character pairing key from companion","");token.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        TextView info=new TextView(this);info.setText("Run the desktop companion first. Use its address and pairing key. The key is kept in memory only.");box.addView(info);
-        AlertDialog dialog=new AlertDialog.Builder(this).setTitle("Wi-Fi companion").setView(box).setPositiveButton("Connect",null).setNegativeButton("Cancel",null).create();
-        dialog.setOnShowListener(d->dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v->{
-            try{
-                String h=host.getText().toString().trim();if(h.isEmpty())throw new IllegalArgumentException("Enter your computer's address");
-                int p=Integer.parseInt(port.getText().toString());String key=token.getText().toString();WifiPad.hex(key);
-                if(p<1||p>65535)throw new IllegalArgumentException("Invalid port");
-                if(permitted())bluetooth.disconnect();wifiMode=true;wifi.connect(h,p,key);showStatus();
-                pref.edit().putString("host",h).putString("port",Integer.toString(p)).apply();dialog.dismiss();
-            }catch(IllegalArgumentException e){token.setError(e.getMessage());}
-        }));dialog.show();
+    private void chooseBluetooth(ControllerSettings settings,boolean all){
+        if(!ensureBluetooth())return;List<BluetoothDevice> devices=new ArrayList<>(bluetooth.paired());String previous=getSharedPreferences("connection",0).getString("lastComputer","");
+        devices.removeIf(d->!all&&!d.getAddress().equals(previous)&&(d.getBluetoothClass()==null||d.getBluetoothClass().getMajorDeviceClass()!=BluetoothClass.Device.Major.COMPUTER));
+        devices.sort((a,b)->Boolean.compare(!a.getAddress().equals(previous),!b.getAddress().equals(previous)));
+        String[] names=new String[devices.size()];Runnable[] actions=new Runnable[devices.size()];for(int i=0;i<devices.size();i++){BluetoothDevice device=devices.get(i);String name=device.getName()==null?"Unnamed device":device.getName();boolean computer=device.getBluetoothClass()!=null&&device.getBluetoothClass().getMajorDeviceClass()==BluetoothClass.Device.Major.COMPUTER;names[i]=name+"\n"+(computer?"Computer":"Bluetooth device")+(device.getAddress().equals(previous)?" · Previously connected":" · Paired");actions[i]=()->{switchBluetooth();bluetooth.connect(device);settings.connectionPage();};}
+        settings.devicePicker(names,actions,all,()->chooseBluetooth(settings,!all),()->connectionAction(1,settings));
+    }
+    void connectWifi(String host,int port,String key){
+        if(host.isEmpty())throw new IllegalArgumentException("Enter your computer's address");WifiPad.hex(key);if(port<1||port>65535)throw new IllegalArgumentException("Invalid port");
+        haptics.stop();if(permitted())bluetooth.disconnect();wifiMode=true;wifi.connect(host,port,key);showStatus();getSharedPreferences("connection",0).edit().putString("host",host).putString("port",Integer.toString(port)).putString("lastWifiKey",key.trim()).putString("lastTransport","wifi").apply();
+    }
+    private void reconnectLastComputer(){
+        SharedPreferences prefs=getSharedPreferences("connection",0);
+        if(!"wifi".equals(prefs.getString("lastTransport","")))return;
+        String host=prefs.getString("host","");
+        String key=prefs.getString("lastWifiKey","");
+        int port;try{port=Integer.parseInt(prefs.getString("port","39570"));}catch(Exception ignored){port=39570;}
+        if(host.isEmpty()||key.isEmpty())return;
+        try{connectWifi(host,port,key);}catch(IllegalArgumentException invalid){prefs.edit().remove("lastTransport").remove("lastWifiKey").apply();}
     }
     private void settingsDialog(){new ControllerSettings(this,pad,this::connectionDialog).show();}
 }

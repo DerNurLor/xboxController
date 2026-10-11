@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Small PhonePad-only UI helper for reproducible connection checks over ADB."""
 import argparse
+import json
 import re
 import subprocess
 import time
@@ -20,10 +21,15 @@ def choose(text):
     node=next(n for n in tree().iter('node') if text in n.get('text',''))
     tap(node)
 def open_connect():
-    node=next(n for n in tree().iter('node') if n.get('content-desc','').startswith('PhonePad touch gamepad'))
-    a,b,c,d=bounds(node);s=min((c-a)/1100,(d-b)/480)
-    x=a+((c-a)-1100*s)/2+860*s;y=b+((d-b)-480*s)/2+30*s
-    adb('shell','input','tap',str(round(x)),str(round(y)));time.sleep(.4)
+    hierarchy=tree()
+    node=next((n for n in hierarchy.iter('node') if n.get('text','').lstrip('⌁ ').startswith('Connection')),None)
+    if node is not None:
+        tap(node)
+        return
+    # Back deliberately pauses game mode; it never taps a hidden gameplay hitbox.
+    adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(.4)
+    if any(n.get('text')=='Exit game mode' for n in tree().iter('node')):choose('Exit game mode')
+    choose('Connection')
 def field(index,value):
     edits=[n for n in tree().iter('node') if n.get('class')=='android.widget.EditText']
     n=edits[index];tap(n)
@@ -41,12 +47,15 @@ p.add_argument('--key-file',type=Path)
 args=p.parse_args()
 open_connect()
 if args.mode=='bluetooth':
-    choose('Bluetooth · choose paired host');choose(args.host)
+    choose('Choose Bluetooth computer');choose(args.host)
 else:
     key=args.key_file.read_text().strip()
     if not re.fullmatch(r'[0-9a-fA-F]{32}',key) or not re.fullmatch(r'[0-9.]+',args.host) or not args.port.isdigit():raise ValueError('Invalid connection parameters')
-    choose('Wi-Fi · connect to companion')
+    choose('Find my computer')
+    choose('Manual connection')
     field(0,args.host);field(1,args.port);field(2,key)
-    button=next(n for n in tree().iter('node') if n.get('resource-id')=='android:id/button1')
+    button=next(n for n in tree().iter('node') if n.get('text')=='Connect' or n.get('resource-id')=='android:id/button1')
     tap(button)
+for node in tree().iter('node'):
+    if node.get('text')=='‹ Setup':tap(node);choose('Start game mode');break
 print('PhonePad connection selected:',args.mode)
