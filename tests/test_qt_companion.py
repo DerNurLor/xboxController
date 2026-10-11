@@ -74,6 +74,7 @@ class QtCompanionTests(unittest.TestCase):
                 for _ in range(100):
                     self.wait_ui(10)
                     if controller.status['receivers']['wifi']=='Running':break
+                controller.command('trace',True)
                 key=bytes.fromhex((Path(root)/'pairing.key').read_text().strip())
                 for slot in (1,2):
                     phone=socket.socket(socket.AF_INET,socket.SOCK_DGRAM);phone.settimeout(2);clients.append(phone)
@@ -88,10 +89,15 @@ class QtCompanionTests(unittest.TestCase):
                 monitor=window.findChild(QObject,'pageLoader').property('item')
                 selector=monitor.findChild(QObject,'monitorPlayer')
                 self.assertTrue(selector.isVisible());self.assertEqual(selector.property('count'),3)
+                left_stick=monitor.findChild(QObject,'monitorLeftStick')
                 for slot in (1,2):
                     monitor.setProperty('playerSlot',slot);self.app.processEvents()
                     output=monitor.property('inputState').toVariant()['output']
                     self.assertEqual(output[0],slot);self.assertEqual(output[2],slot*1000)
+                    player=next(item for item in controller.status['players'] if item['slot']==slot)
+                    samples=left_stick.property('samples')
+                    self.assertTrue(samples)
+                    self.assertTrue(all(point['source']==player['source'] for point in samples))
             finally:
                 for phone in clients:phone.close()
                 controller.close()

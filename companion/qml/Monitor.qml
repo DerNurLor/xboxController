@@ -26,6 +26,14 @@ ColumnLayout {
     property var visiblePulses: (snapshot.input_pulses || []).filter(function(pulse) {
         return !playerSlot || pulse.kind === "keyboard" || pulse.kind === "mouse" || pulse.source === (playerSlot===1?"wifi":"wifi:"+playerSlot)
     })
+    property var trajectorySamples: {
+        var samples = snapshot.controller_samples || []
+        if (!playerSlot) return samples
+        for (var player of snapshot.players || [])
+            if (player.slot === playerSlot)
+                return samples.filter(function(point) { return point.source === player.source })
+        return []
+    }
     spacing: Theme.gap
     function normalize(value) { return Math.max(-1,Math.min(1,value/(value<0?32768:32767))) }
     function outputName(pulse) {
@@ -133,8 +141,8 @@ ColumnLayout {
         Card { visible: monitor.view!=="keyboard"; Layout.fillWidth: true; Layout.preferredWidth: 260
             ColumnLayout { anchors.fill: parent; spacing: 12
                 RowLayout { visible: monitor.view==="controller"; Layout.fillWidth: true
-                    Stick { title: "Left"; axisX: normalize(monitor.inputState.controller[2]); axisY: normalize(monitor.inputState.controller[3]); samples: snapshot.controller_samples; Layout.fillWidth: true }
-                    Stick { title: "Right"; axisX: normalize(monitor.inputState.controller[4]); axisY: normalize(monitor.inputState.controller[5]); samples: snapshot.controller_samples; axisOffset: 2; Layout.fillWidth: true }
+                    Stick { objectName: "monitorLeftStick"; title: "Left"; axisX: normalize(monitor.inputState.controller[2]); axisY: normalize(monitor.inputState.controller[3]); samples: monitor.trajectorySamples; Layout.fillWidth: true }
+                    Stick { objectName: "monitorRightStick"; title: "Right"; axisX: normalize(monitor.inputState.controller[4]); axisY: normalize(monitor.inputState.controller[5]); samples: monitor.trajectorySamples; axisOffset: 2; Layout.fillWidth: true }
                 }
                 RowLayout { visible: monitor.view==="controller"; Layout.fillWidth: true
                     Label { text: "LT"; color: Theme.muted }
